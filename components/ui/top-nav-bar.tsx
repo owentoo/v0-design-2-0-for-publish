@@ -10,8 +10,8 @@ interface TopNavBarProps {
 
 export function TopNavBar({ showBackButton = false, onBackClick, title }: TopNavBarProps) {
   return (
-    <div className="px-4 mb-1">
-      <div className="max-w-sm mx-auto py-4 flex items-center relative min-h-[80px] px-4 justify-start text-left">
+    <div className="px-0 mb-0">
+      <div className="max-w-[600px] mx-auto py-4 flex items-center relative min-h-[80px] justify-start text-left px-4">
         {showBackButton && onBackClick && (
           <div className="w-[68px]">
             <button

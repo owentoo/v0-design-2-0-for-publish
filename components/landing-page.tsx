@@ -338,7 +338,7 @@ export function LandingPage() {
 
         {lightboxImage && (
           <div className="fixed inset-0 top-14 bg-black/80 z-40 flex items-center justify-center p-4">
-            <div className="relative max-w-sm w-full h-[85vh] flex flex-col mx-auto">
+            <div className="relative max-w-[600px] w-full h-[85vh] flex flex-col mx-auto px-4">
               <button
                 onClick={closeLightbox}
                 className="absolute top-2 right-2 z-50 w-8 h-8 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition-colors"
@@ -373,7 +373,7 @@ export function LandingPage() {
 
         {showAIPrompt && (
           <div className="min-h-screen px-4 py-0">
-            <div className="max-w-sm mx-auto">
+            <div className="max-w-[600px] mx-auto">
               <div className="relative overflow-y-auto p-4 min-h-[85vh] py-5">
                 <div className="relative z-10">
                   <div className="mb-16 rounded-full">
@@ -479,7 +479,7 @@ export function LandingPage() {
 
         {showAILoading && (
           <div className="min-h-screen px-4 py-0 flex items-center justify-center">
-            <div className="max-w-sm mx-auto w-full">
+            <div className="max-w-[600px] mx-auto w-full">
               <div className="flex flex-col items-center justify-center space-y-8 px-6">
                 <div className="text-center space-y-6 w-full">
                   <h1 className="font-bold text-white leading-tight text-3xl text-left">Cooking up your designs</h1>
@@ -506,7 +506,7 @@ export function LandingPage() {
 
         {showAIResults && (
           <div className="min-h-screen px-4 py-0 text-transparent bg-transparent">
-            <div className="max-w-sm mx-auto">
+            <div className="max-w-[600px] mx-auto">
               <div className="relative overflow-y-auto p-4 min-h-[85vh] py-0">
                 <div className="relative z-10">
                   <div className="text-center mb-6"></div>
@@ -631,8 +631,8 @@ export function LandingPage() {
         )}
 
         {!showOptions && !showAIPrompt && !showAIResults && !showAILoading && (
-          <div className={`min-h-screen py-0 px-3`}>
-            <div className="max-w-sm mx-auto">
+          <div className={`min-h-screen py-0 px-4`}>
+            <div className="max-w-[600px] mx-auto">
               <div className="relative overflow-y-auto p-4 min-h-[85vh]">
                 <div className="grid grid-cols-2 gap-6 h-[calc(100%-80px)] overflow-y-auto">
                   {products.map((product) => (
@@ -647,7 +647,7 @@ export function LandingPage() {
                             <img
                               src={product.image || "/placeholder.svg"}
                               alt={product.name}
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-contain"
                             />
                           </div>
                         </div>
@@ -664,8 +664,8 @@ export function LandingPage() {
         )}
 
         {showOptions && !showAIPrompt && !showAIResults && !showAILoading && (
-          <div className="min-h-screen px-4 py-0">
-            <div className="max-w-sm mx-auto relative z-10">
+          <div className="min-h-screen py-0 px-0">
+            <div className="max-w-[600px] mx-auto relative z-10">
               <div className="relative overflow-y-auto p-6 min-h-[85vh] pb-0 pl-4 pr-4">
                 <div className="relative z-10 space-y-4">
                   <div
