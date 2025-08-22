@@ -449,21 +449,21 @@ export function LandingPage() {
                   <h2 className="mb-4 text-white text-sm font-medium">Example Output</h2>
 
                   <div className="grid grid-cols-3 gap-3">
-                    <div className="aspect-square flex items-center justify-center overflow-hidden">
+                    <div className="aspect-square flex items-center justify-center overflow-hidden rounded-xl">
                       <img
                         src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/a-clean-and-modern-logo-illustration-fea_aFuultKgQh-HNvXcKTMAZw_hGGDDkT3QsqQ5SxEV74Nug_0003_Layer_1-k0tu4OCtfnKVKGRdqhaU28eMrcisy6.webp"
                         alt="Good Dog Bar logo with winking golden retriever"
                         className="w-full h-full object-contain"
                       />
                     </div>
-                    <div className="aspect-square flex items-center justify-center overflow-hidden">
+                    <div className="aspect-square flex items-center justify-center overflow-hidden rounded-xl">
                       <img
                         src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/a-clean-and-modern-logo-illustration-fea_aFuultKgQh-HNvXcKTMAZw_hGGDDkT3QsqQ5SxEV74Nug_0001_a-logo-illustration-of-a-cha-uNghBXLNvHCOZ8cuA8C5t6fPZFbvP8.webp"
                         alt="Good Dog Bar logo with terrier in top hat"
                         className="w-full h-full object-contain"
                       />
                     </div>
-                    <div className="aspect-square flex items-center justify-center overflow-hidden">
+                    <div className="aspect-square flex items-center justify-center overflow-hidden rounded-xl">
                       <img
                         src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/a-clean-and-modern-logo-illustration-fea_aFuultKgQh-HNvXcKTMAZw_hGGDDkT3QsqQ5SxEV74Nug_0004_Background-Lsj0003epmE1MMZaEHvOIVaVNYB2gD.webp"
                         alt="Good Dog Bar logo with sitting puppy"
@@ -505,7 +505,7 @@ export function LandingPage() {
         )}
 
         {showAIResults && (
-          <div className="min-h-screen px-4 py-0 text-transparent bg-transparent">
+          <div className="min-h-screen py-0 text-transparent bg-transparent px-0">
             <div className="max-w-[600px] mx-auto">
               <div className="relative overflow-y-auto p-4 min-h-[85vh] py-0">
                 <div className="relative z-10">
@@ -609,7 +609,7 @@ export function LandingPage() {
                         </Button>
                       )}
 
-                      <div className="text-center mt-20">
+                      <div className="text-center mt-16">
                         <button
                           onClick={() => {
                             setShowAIResults(false)
@@ -631,7 +631,7 @@ export function LandingPage() {
         )}
 
         {!showOptions && !showAIPrompt && !showAIResults && !showAILoading && (
-          <div className={`min-h-screen py-0 px-4`}>
+          <div className={`min-h-screen py-0 px-0`}>
             <div className="max-w-[600px] mx-auto">
               <div className="relative overflow-y-auto p-4 min-h-[85vh]">
                 <div className="grid grid-cols-2 gap-6 h-[calc(100%-80px)] overflow-y-auto">
@@ -647,7 +647,7 @@ export function LandingPage() {
                             <img
                               src={product.image || "/placeholder.svg"}
                               alt={product.name}
-                              className="w-full h-full object-contain"
+                              className="max-w-full max-h-full object-contain"
                             />
                           </div>
                         </div>
