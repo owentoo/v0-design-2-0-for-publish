@@ -372,7 +372,7 @@ export function LandingPage() {
         )}
 
         {showAIPrompt && (
-          <div className="min-h-screen px-4 py-0">
+          <div className="min-h-screen py-0 px-0">
             <div className="max-w-[600px] mx-auto">
               <div className="relative overflow-y-auto p-4 min-h-[85vh] py-5">
                 <div className="relative z-10">
@@ -530,7 +530,7 @@ export function LandingPage() {
                           {generatedImages.map((image, index) => (
                             <CarouselItem key={image.id}>
                               <div className="mb-4">
-                                <div className="aspect-square overflow-hidden flex items-center justify-center relative">
+                                <div className="aspect-square overflow-hidden flex items-center justify-center relative rounded-xl">
                                   {image.isLoading ? (
                                     <div className="w-full h-full bg-white/20 rounded-2xl flex flex-col items-center justify-center space-y-4 p-8">
                                       <Loader2 className="w-12 h-12 text-white animate-spin" />
@@ -558,9 +558,9 @@ export function LandingPage() {
                           {generationCount < 15 && (
                             <CarouselItem>
                               <div className="mb-4">
-                                <div className="aspect-square overflow-hidden flex items-center justify-center relative">
+                                <div className="aspect-square overflow-hidden flex items-center justify-center relative rounded-xl">
                                   <div
-                                    className="flex flex-col items-center justify-center space-y-6 p-8 cursor-pointer hover:opacity-90 transition-opacity w-full h-full bg-gradient-to-br from-purple-600 to-purple-700 rounded-2xl"
+                                    className="flex flex-col items-center justify-center space-y-6 p-8 cursor-pointer hover:opacity-90 transition-opacity w-full h-full bg-gradient-to-br from-purple-600 to-purple-700"
                                     onClick={handleGenerateMore}
                                   >
                                     <ArrowUp className="w-12 h-12 text-white" />
