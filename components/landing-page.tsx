@@ -607,7 +607,7 @@ export function LandingPage() {
                       onClick={() => handleProductSelect(product)}
                     >
                       <div className="flex flex-col space-y-2">
-                        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-200 aspect-square relative overflow-hidden">
+                        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-200 aspect-square relative overflow-hidden border-none">
                           <div className="flex items-center justify-center w-auto h-full">
                             <img
                               src={product.image || "/placeholder.svg"}
@@ -634,7 +634,7 @@ export function LandingPage() {
               <div className="relative overflow-y-auto p-6 min-h-[85vh] pb-0 pl-4 pr-4 pt-0">
                 <div className="relative z-10 space-y-4">
                   <div
-                    className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 cursor-pointer hover:bg-white/15 transition-all duration-200 pb-4 pt-4 pl-4 pr-4"
+                    className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 cursor-pointer hover:bg-white/15 transition-all duration-200 pb-4 pt-4 pl-4 pr-4 border-none"
                     onClick={() => handleNavigation("ai")}
                   >
                     <div className="flex items-center justify-center w-12 h-12 rounded-lg mb-4 bg-fuchsia-600">
@@ -647,7 +647,7 @@ export function LandingPage() {
                   </div>
 
                   <div
-                    className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 cursor-pointer hover:bg-white/15 transition-all duration-200 pb-4 pt-4 pl-4 pr-4"
+                    className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 cursor-pointer hover:bg-white/15 transition-all duration-200 pb-4 pt-4 pl-4 pr-4 border-none"
                     onClick={() => handleNavigation("upload")}
                   >
                     <div className="flex items-center justify-center w-12 h-12 rounded-lg mb-4 bg-sky-500">
@@ -660,7 +660,7 @@ export function LandingPage() {
                   </div>
 
                   <div
-                    className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 cursor-pointer hover:bg-white/15 transition-all duration-200 pb-4 pt-4 pl-4 pr-4"
+                    className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 cursor-pointer hover:bg-white/15 transition-all duration-200 pb-4 pt-4 pl-4 pr-4 border-none"
                     onClick={() => handleNavigation("text")}
                   >
                     <div className="flex items-center justify-center w-12 h-12 rounded-lg mb-4 bg-yellow-600">
