@@ -360,9 +360,9 @@ export function LandingPage() {
                             {isGenerating ? (
                               <Loader2 className="w-4 h-4 text-white animate-spin" />
                             ) : aiPrompt.trim() ? (
-                              <ArrowUp className="w-4 h-4" style={{ color: "#c703af" }} />
+                              <ArrowUp className="w-4 h-4" style={{ color: "#c703af" }} strokeWidth={3} />
                             ) : (
-                              <ArrowUp className="w-4 h-4 text-[rgba(255,255,255,0.2)]" />
+                              <ArrowUp className="w-4 h-4 text-[rgba(255,255,255,0.2)]" strokeWidth={3} />
                             )}
                           </button>
                         </div>
@@ -375,35 +375,35 @@ export function LandingPage() {
                   <h2 className="text-white font-medium text-sm mb-4">Example Prompt</h2>
 
                   <div className="mb-6">
-                    <div className="flex flex-wrap mb-4 gap-0.5">
-                      <span className="py-2 text-white rounded-xl font-medium bg-[rgba(245,73,0,0.7)] text-sm px-3">
+                    <div className="flex flex-wrap mb-4 gap-0.5 text-xs">
+                      <span className="py-2 text-white font-medium bg-[rgba(245,73,0,0.7)] text-xs rounded-md px-2">
                         A logo
                       </span>
-                      <span className="text-white rounded-xl font-medium py-2 bg-[rgba(22,93,251,0.7)] text-sm px-3">
+                      <span className="text-white font-medium py-2 bg-[rgba(22,93,251,0.7)] text-xs rounded-md px-2">
                         of a dog wearing a black top hat winking
                       </span>
-                      <span className="py-2 text-white rounded-xl font-medium bg-[rgba(152,16,250,0.7065217391304348)] text-sm px-3">
+                      <span className="py-2 text-white font-medium bg-[rgba(152,16,250,0.7065217391304348)] text-xs rounded-md px-2">
                         with text that says Good Dog Bar
                       </span>
-                      <span className="py-2 text-white rounded-xl font-medium bg-[rgba(0,166,62,0.7065217391304348)] text-sm px-3">
+                      <span className="py-2 text-white font-medium bg-[rgba(0,166,62,0.7065217391304348)] text-xs rounded-md px-2">
                         on a white background
                       </span>
                     </div>
 
                     <div className="flex flex-wrap text-sm gap-4">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5">
                         <div className="w-3 h-3 bg-orange-600 rounded-full"></div>
                         <span className="text-white font-bold tracking-wider text-xs">STYLE</span>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5">
                         <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
                         <span className="text-white font-bold tracking-wider text-xs">SUBJECT</span>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5">
                         <div className="w-3 h-3 bg-purple-600 rounded-full"></div>
                         <span className="text-white font-bold tracking-wider text-xs">TEXT</span>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5">
                         <div className="w-3 h-3 bg-green-600 rounded-full"></div>
                         <span className="text-white font-bold tracking-wider text-xs">BACKGROUND</span>
                       </div>

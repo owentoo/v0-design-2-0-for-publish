@@ -56,7 +56,7 @@ export function ProductCarousel({ onProductSelect }: ProductCarouselProps) {
             onClick={handlePrevious}
             className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white/80 backdrop-blur-sm rounded-full shadow-md flex items-center justify-center hover:bg-white transition-colors"
           >
-            <ChevronLeft className="w-4 h-4 text-gray-600" />
+            <ChevronLeft className="w-4 h-4 text-gray-600" strokeWidth={3} />
           </button>
         )}
 
@@ -65,7 +65,7 @@ export function ProductCarousel({ onProductSelect }: ProductCarouselProps) {
             onClick={handleNext}
             className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white/80 backdrop-blur-sm rounded-full shadow-md flex items-center justify-center hover:bg-white transition-colors"
           >
-            <ChevronRight className="w-4 h-4 text-gray-600" />
+            <ChevronRight className="w-4 h-4 text-gray-600" strokeWidth={3} />
           </button>
         )}
 
