@@ -372,25 +372,25 @@ export function LandingPage() {
                 </div>
 
                 <div className="mb-12">
-                  <h2 className="text-white font-medium text-sm mb-4">Example Results</h2>
+                  <h2 className="text-white font-medium text-sm mb-4">Example Prompt</h2>
 
                   <div className="mb-6">
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      <span className="px-4 py-2 text-white rounded-xl font-medium text-base bg-[rgba(245,73,0,0.7)]">
+                    <div className="flex flex-wrap mb-4 gap-0.5">
+                      <span className="py-2 text-white rounded-xl font-medium bg-[rgba(245,73,0,0.7)] text-sm px-3">
                         A logo
                       </span>
-                      <span className="text-white rounded-xl font-medium text-base px-4 py-2 bg-[rgba(22,93,251,0.7)]">
+                      <span className="text-white rounded-xl font-medium py-2 bg-[rgba(22,93,251,0.7)] text-sm px-3">
                         of a dog wearing a black top hat winking
                       </span>
-                      <span className="px-4 py-2 text-white rounded-xl font-medium text-base bg-[rgba(152,16,250,0.7065217391304348)]">
+                      <span className="py-2 text-white rounded-xl font-medium bg-[rgba(152,16,250,0.7065217391304348)] text-sm px-3">
                         with text that says Good Dog Bar
                       </span>
-                      <span className="px-4 py-2 text-white rounded-xl font-medium text-base bg-[rgba(0,166,62,0.7065217391304348)]">
+                      <span className="py-2 text-white rounded-xl font-medium bg-[rgba(0,166,62,0.7065217391304348)] text-sm px-3">
                         on a white background
                       </span>
                     </div>
 
-                    <div className="flex flex-wrap gap-6 text-sm">
+                    <div className="flex flex-wrap text-sm gap-4">
                       <div className="flex items-center gap-2">
                         <div className="w-3 h-3 bg-orange-600 rounded-full"></div>
                         <span className="text-white font-bold tracking-wider text-xs">STYLE</span>
