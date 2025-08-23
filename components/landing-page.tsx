@@ -599,7 +599,7 @@ export function LandingPage() {
           <div className={`min-h-screen py-0 px-0`}>
             <div className="max-w-[600px] mx-auto">
               <div className="relative overflow-y-auto p-4 min-h-[85vh] pt-[0] pb-6">
-                <div className="grid grid-cols-2 gap-6 h-[calc(100%-80px)] overflow-y-auto">
+                <div className="grid grid-cols-2 gap-3 h-[calc(100%-80px)] overflow-y-auto">
                   {products.map((product) => (
                     <div
                       key={product.id}
