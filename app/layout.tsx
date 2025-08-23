@@ -23,7 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} antialiased`}>
-      <body className="font-sans bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500">{children}</body>
+      <body className="font-sans bg-gradient-to-br from-blue-800 via-purple-900 to-pink-800">{children}</body>
     </html>
   )
 }

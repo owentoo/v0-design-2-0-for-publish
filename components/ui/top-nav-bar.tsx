@@ -24,7 +24,7 @@ export function TopNavBar({ showBackButton = false, onBackClick, title }: TopNav
         )}
 
         <div className="flex-1 whitespace-nowrap">
-          <h1 className="text-white text-xl font-bold">{title || "dfgdfgfd"}</h1>
+          <h1 className="text-white font-bold text-xl">{title || "dfgdfgfd"}</h1>
         </div>
       </div>
     </div>

@@ -5,7 +5,7 @@ import { useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { TopNavBar } from "@/components/ui/top-nav-bar"
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel"
-import { Upload, Sparkles, Type, Loader2, X, ArrowUp } from "lucide-react"
+import { Upload, Sparkles, Type, Loader2, ArrowUp } from "lucide-react"
 
 interface Product {
   id: number
@@ -29,7 +29,6 @@ export function LandingPage() {
   const [aiPrompt, setAiPrompt] = useState("")
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([])
   const [isGenerating, setIsGenerating] = useState(false)
-  const [lightboxImage, setLightboxImage] = useState<string | null>(null)
   const [generationCount, setGenerationCount] = useState(0)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [progress, setProgress] = useState(0)
@@ -190,14 +189,6 @@ export function LandingPage() {
     window.location.href = "https://www.rushordertees.com/design"
   }
 
-  const openLightbox = (imageUrl: string) => {
-    setLightboxImage(imageUrl)
-  }
-
-  const closeLightbox = () => {
-    setLightboxImage(null)
-  }
-
   const handleBackToOptions = () => {
     setShowAIPrompt(false)
     setShowAIResults(false)
@@ -315,7 +306,7 @@ export function LandingPage() {
 
   return (
     <div>
-      <div className="min-h-screen bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500">
+      <div className="min-h-screen bg-gradient-to-br from-blue-800 via-purple-900 to-pink-800">
         {shouldShowTopNav && (
           <TopNavBar
             showBackButton={shouldShowBackButton}
@@ -336,41 +327,6 @@ export function LandingPage() {
 
         <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
 
-        {lightboxImage && (
-          <div className="fixed inset-0 top-14 bg-black/80 z-40 flex items-center justify-center p-4">
-            <div className="relative max-w-[600px] w-full h-[85vh] flex flex-col mx-auto px-4">
-              <button
-                onClick={closeLightbox}
-                className="absolute top-2 right-2 z-50 w-8 h-8 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition-colors"
-              >
-                <X className="w-5 h-5 text-white" />
-              </button>
-
-              <div className="flex-1 min-h-0 mb-4">
-                <img
-                  src={lightboxImage || "/placeholder.svg"}
-                  alt="Preview"
-                  className="w-full h-full object-contain rounded-lg"
-                  onError={(e) => {
-                    console.log("[v0] Lightbox image failed to load:", lightboxImage)
-                    e.currentTarget.src = "/abstract-geometric-shapes.png"
-                  }}
-                />
-              </div>
-
-              <Button
-                onClick={() => {
-                  closeLightbox()
-                  window.location.href = "https://www.rushordertees.com/design"
-                }}
-                className="w-full bg-gradient-to-r from-cyan-400 to-purple-500 hover:from-cyan-500 hover:to-purple-600 text-white font-medium transition-all duration-200 border-0 py-3 flex-shrink-0"
-              >
-                Use Design
-              </Button>
-            </div>
-          </div>
-        )}
-
         {showAIPrompt && (
           <div className="min-h-screen py-0 px-0">
             <div className="max-w-[600px] mx-auto">
@@ -378,13 +334,13 @@ export function LandingPage() {
                 <div className="relative z-10">
                   <div className="mb-16 rounded-full">
                     <div className="relative rounded-full">
-                      <div className="bg-white border border-gray-200 shadow-sm overflow-hidden rounded-4xl">
-                        <div className="flex items-center px-4 py-2 pr-2">
+                      <div className="border border-white/40 shadow-sm overflow-hidden rounded-4xl bg-[rgba(255,255,255,0.16)]">
+                        <div className="flex items-center px-4 py-2 pr-2 shadow-none text-transparent bg-transparent">
                           <textarea
                             value={aiPrompt}
                             onChange={(e) => setAiPrompt(e.target.value)}
-                            placeholder="Ask anything"
-                            className="flex-1 border-0 text-base focus:ring-0 focus:outline-none bg-transparent resize-none min-h-[24px] max-h-32 placeholder-gray-400"
+                            placeholder="Describe your design..."
+                            className="flex-1 border-0 text-base focus:ring-0 focus:outline-none bg-transparent resize-none min-h-[24px] max-h-32 text-white placeholder-white/30"
                             disabled={isGenerating}
                             rows={1}
                             style={{ lineHeight: "1.5" }}
@@ -397,18 +353,16 @@ export function LandingPage() {
                           <button
                             onClick={aiPrompt.trim() ? handleAIGenerate : undefined}
                             className={`ml-3 rounded-full flex items-center justify-center transition-all duration-200 flex-shrink-0 h-10 w-10 ${
-                              aiPrompt.trim()
-                                ? "bg-gradient-to-r from-[#6201FC] to-[#FE0587] hover:from-[#5001E0] hover:to-[#E0046B]"
-                                : "bg-gray-100 hover:bg-gray-200"
+                              aiPrompt.trim() ? "bg-white hover:bg-gray-100" : "bg-white/20 hover:bg-white/30"
                             }`}
                             disabled={isGenerating || !aiPrompt.trim()}
                           >
                             {isGenerating ? (
                               <Loader2 className="w-4 h-4 text-white animate-spin" />
                             ) : aiPrompt.trim() ? (
-                              <ArrowUp className="w-4 h-4 text-white" />
+                              <ArrowUp className="w-4 h-4" style={{ color: "#c703af" }} />
                             ) : (
-                              <ArrowUp className="w-4 h-4 text-gray-400" />
+                              <ArrowUp className="w-4 h-4 text-[rgba(255,255,255,0.2)]" />
                             )}
                           </button>
                         </div>
@@ -418,35 +372,47 @@ export function LandingPage() {
                 </div>
 
                 <div className="mb-12">
-                  <h2 className="mb-4 text-white text-sm font-medium">Example Prompt</h2>
+                  <h2 className="text-white font-medium text-sm mb-4">Example Results</h2>
 
-                  <div className="flex space-x-1 mb-3 text-sm">
-                    <span className="px-2 py-1 bg-orange-100/80 text-orange-700 rounded font-medium backdrop-blur-sm">
-                      Style
-                    </span>
-                    <span className="px-2 py-1 bg-blue-100/80 text-blue-700 rounded font-medium backdrop-blur-sm">
-                      Subject
-                    </span>
-                    <span className="px-2 py-1 bg-purple-100/80 text-purple-700 rounded font-medium backdrop-blur-sm">
-                      Text
-                    </span>
-                    <span className="px-2 py-1 bg-green-100/80 text-green-700 rounded font-medium backdrop-blur-sm">
-                      Background
-                    </span>
-                  </div>
+                  <div className="mb-6">
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      <span className="px-4 py-2 text-white rounded-xl font-medium text-base bg-[rgba(245,73,0,0.7)]">
+                        A logo
+                      </span>
+                      <span className="text-white rounded-xl font-medium text-base px-4 py-2 bg-[rgba(22,93,251,0.7)]">
+                        of a dog wearing a black top hat winking
+                      </span>
+                      <span className="px-4 py-2 text-white rounded-xl font-medium text-base bg-[rgba(152,16,250,0.7065217391304348)]">
+                        with text that says Good Dog Bar
+                      </span>
+                      <span className="px-4 py-2 text-white rounded-xl font-medium text-base bg-[rgba(0,166,62,0.7065217391304348)]">
+                        on a white background
+                      </span>
+                    </div>
 
-                  <div className="border-2 border-white/40 rounded-xl p-4 backdrop-blur-sm border-none bg-[rgba(255,255,255,0.2)]">
-                    <p className="text-sm leading-relaxed text-black">
-                      <span className="bg-orange-200/80 px-1 rounded">A logo</span> of{" "}
-                      <span className="bg-blue-200/80 px-1 rounded">a dog wearing a black top hat winking</span> with{" "}
-                      <span className="bg-purple-200/80 px-1 rounded">text that says Good Dog Bar</span> on{" "}
-                      <span className="bg-green-200/80 px-1 rounded">a white background</span>
-                    </p>
+                    <div className="flex flex-wrap gap-6 text-sm">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-orange-600 rounded-full"></div>
+                        <span className="text-white font-bold tracking-wider text-xs">STYLE</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
+                        <span className="text-white font-bold tracking-wider text-xs">SUBJECT</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-purple-600 rounded-full"></div>
+                        <span className="text-white font-bold tracking-wider text-xs">TEXT</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-green-600 rounded-full"></div>
+                        <span className="text-white font-bold tracking-wider text-xs">BACKGROUND</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
                 <div className="mb-6">
-                  <h2 className="mb-4 text-white text-sm font-medium">Example Output</h2>
+                  <h2 className="mb-4 text-white text-sm font-medium">Output from example prompt</h2>
 
                   <div className="grid grid-cols-3 gap-3">
                     <div className="aspect-square flex items-center justify-center overflow-hidden rounded-xl">
@@ -482,7 +448,7 @@ export function LandingPage() {
             <div className="max-w-[600px] mx-auto w-full">
               <div className="flex flex-col items-center justify-center space-y-8 px-6">
                 <div className="text-center space-y-6 w-full">
-                  <h1 className="font-bold text-white leading-tight text-3xl text-left">Cooking up your designs</h1>
+                  <h1 className="font-bold text-white leading-tight text-left text-2xl">Cooking up your designs</h1>
 
                   <div className="w-full bg-white/20 rounded-full h-3 overflow-hidden">
                     <div
@@ -507,7 +473,7 @@ export function LandingPage() {
         {showAIResults && (
           <div className="min-h-screen py-0 text-transparent bg-transparent px-0">
             <div className="max-w-[600px] mx-auto">
-              <div className="relative overflow-y-auto p-4 min-h-[85vh] py-0">
+              <div className="relative overflow-y-auto px-4 min-h-[85vh]">
                 <div className="relative z-10">
                   <div className="text-center mb-6"></div>
 
@@ -543,8 +509,7 @@ export function LandingPage() {
                                     <img
                                       src={image.url || "/placeholder.svg"}
                                       alt={`Generated design ${index + 1}`}
-                                      className="w-full h-full object-contain cursor-pointer hover:opacity-90 transition-opacity"
-                                      onClick={() => openLightbox(image.url)}
+                                      className="w-full h-full object-contain"
                                       onError={(e) => {
                                         console.log("[v0] Image failed to load:", image.url)
                                         e.currentTarget.src = "/abstract-geometric-shapes.png"
@@ -560,7 +525,7 @@ export function LandingPage() {
                               <div className="mb-4">
                                 <div className="aspect-square overflow-hidden flex items-center justify-center relative rounded-xl">
                                   <div
-                                    className="flex flex-col items-center justify-center space-y-6 p-8 cursor-pointer hover:opacity-90 transition-opacity w-full h-full bg-gradient-to-br from-purple-600 to-purple-700"
+                                    className="flex flex-col items-center justify-center space-y-6 p-8 cursor-pointer hover:opacity-90 transition-opacity w-full h-full bg-gradient-to-br from-purple-800 to-purple-900"
                                     onClick={handleGenerateMore}
                                   >
                                     <ArrowUp className="w-12 h-12 text-white" />
@@ -576,7 +541,7 @@ export function LandingPage() {
                         </CarouselContent>
 
                         <div className="flex items-center justify-between mb-6 px-0">
-                          <CarouselPrevious className="static translate-y-0 hover:bg-white/90 flex items-center justify-center transition-colors w-12 h-12 rounded-2xl bg-white/70 border-0 text-black hover:text-black disabled:bg-black/20 disabled:text-white/50" />
+                          <CarouselPrevious className="static translate-y-0 hover:bg-black/30 flex items-center justify-center transition-colors w-12 h-12 rounded-2xl bg-[rgba(255,255,255,0.14)] border-0 text-white hover:text-white disabled:bg-black/20 disabled:text-white/50" />
 
                           <div className="backdrop-blur-sm rounded-full px-3 py-1 bg-transparent">
                             <span className="text-white text-sm font-medium">
@@ -586,7 +551,7 @@ export function LandingPage() {
                             </span>
                           </div>
 
-                          <CarouselNext className="static translate-y-0 hover:bg-white/90 flex items-center justify-center transition-colors rounded-2xl w-12 h-12 bg-white/70 border-0 text-black hover:text-black disabled:bg-black/20 disabled:text-white/50" />
+                          <CarouselNext className="static translate-y-0 hover:bg-black/30 flex items-center justify-center transition-colors rounded-2xl w-12 h-12 bg-[rgba(255,255,255,0.14)] border-0 text-white hover:text-white disabled:bg-black/20 disabled:text-white/50" />
                         </div>
                       </Carousel>
 
@@ -633,7 +598,7 @@ export function LandingPage() {
         {!showOptions && !showAIPrompt && !showAIResults && !showAILoading && (
           <div className={`min-h-screen py-0 px-0`}>
             <div className="max-w-[600px] mx-auto">
-              <div className="relative overflow-y-auto p-4 min-h-[85vh]">
+              <div className="relative overflow-y-auto p-4 min-h-[85vh] pt-[0] pb-6">
                 <div className="grid grid-cols-2 gap-6 h-[calc(100%-80px)] overflow-y-auto">
                   {products.map((product) => (
                     <div
@@ -643,7 +608,7 @@ export function LandingPage() {
                     >
                       <div className="flex flex-col space-y-2">
                         <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-200 aspect-square relative overflow-hidden">
-                          <div className="w-full h-full flex items-center justify-center">
+                          <div className="flex items-center justify-center w-auto h-full">
                             <img
                               src={product.image || "/placeholder.svg"}
                               alt={product.name}
@@ -651,7 +616,7 @@ export function LandingPage() {
                             />
                           </div>
                         </div>
-                        <p className="text-white text-left leading-tight px-1 text-sm pt-0.5 pb-0 mb-3.5 font-semibold leading-7">
+                        <p className="text-white text-left leading-tight px-1 pt-0.5 pb-0 mb-3.5 font-semibold leading-7 text-base">
                           {product.name}
                         </p>
                       </div>
@@ -666,16 +631,16 @@ export function LandingPage() {
         {showOptions && !showAIPrompt && !showAIResults && !showAILoading && (
           <div className="min-h-screen py-0 px-0">
             <div className="max-w-[600px] mx-auto relative z-10">
-              <div className="relative overflow-y-auto p-6 min-h-[85vh] pb-0 pl-4 pr-4">
+              <div className="relative overflow-y-auto p-6 min-h-[85vh] pb-0 pl-4 pr-4 pt-0">
                 <div className="relative z-10 space-y-4">
                   <div
                     className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 cursor-pointer hover:bg-white/15 transition-all duration-200 pb-4 pt-4 pl-4 pr-4"
                     onClick={() => handleNavigation("ai")}
                   >
-                    <div className="flex items-center justify-center w-12 h-12 rounded-lg mb-4 bg-[rgba(112,2,242,1)]">
+                    <div className="flex items-center justify-center w-12 h-12 rounded-lg mb-4 bg-fuchsia-600">
                       <Sparkles className="text-white h-6 w-6" />
                     </div>
-                    <h3 className="text-white mb-3 leading-5 text-lg font-bold">Create with AI</h3>
+                    <h3 className="text-white text-lg font-bold leading-5 mb-1.5">Create with AI</h3>
                     <p className="text-white/70 leading-relaxed text-sm leading-4">
                       Describe your idea and let AI generate unique designs for you
                     </p>
@@ -685,10 +650,10 @@ export function LandingPage() {
                     className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 cursor-pointer hover:bg-white/15 transition-all duration-200 pb-4 pt-4 pl-4 pr-4"
                     onClick={() => handleNavigation("upload")}
                   >
-                    <div className="flex items-center justify-center w-12 h-12 rounded-lg mb-4 bg-[rgba(112,2,242,1)]">
+                    <div className="flex items-center justify-center w-12 h-12 rounded-lg mb-4 bg-sky-500">
                       <Upload className="text-white h-6 w-6" />
                     </div>
-                    <h3 className="text-white mb-3 font-bold leading-5 text-lg">Upload Art</h3>
+                    <h3 className="text-white font-bold leading-5 text-lg mb-1.5">Upload Art</h3>
                     <p className="text-white/70 leading-relaxed font-normal text-sm leading-4">
                       Have your own design? Upload and customize it on any product
                     </p>
@@ -698,10 +663,10 @@ export function LandingPage() {
                     className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 cursor-pointer hover:bg-white/15 transition-all duration-200 pb-4 pt-4 pl-4 pr-4"
                     onClick={() => handleNavigation("text")}
                   >
-                    <div className="flex items-center justify-center w-12 h-12 rounded-lg mb-4 bg-[rgba(112,2,242,1)]">
+                    <div className="flex items-center justify-center w-12 h-12 rounded-lg mb-4 bg-yellow-600">
                       <Type className="text-white h-6 w-6" />
                     </div>
-                    <h3 className="text-white mb-3 text-lg leading-5 font-bold">Add Text</h3>
+                    <h3 className="text-white text-lg leading-5 font-bold mb-1.5">Add Text</h3>
                     <p className="text-white/70 leading-relaxed text-sm leading-4">
                       Create custom text designs with fonts, colors, and effects
                     </p>

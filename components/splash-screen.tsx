@@ -55,7 +55,7 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
   return (
     <div
       className={cn(
-        "fixed inset-0 z-50 transition-opacity duration-300 bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500",
+        "fixed inset-0 z-50 transition-opacity duration-300 bg-gradient-to-br from-blue-800 via-purple-900 to-pink-800",
         !isVisible && "opacity-0",
       )}
     >
@@ -66,7 +66,7 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
           <div className="relative">
             <div className="w-32 h-1 bg-white/30 rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-blue-500 to-purple-600 rounded-full transition-all duration-100 ease-out"
+                className="h-full bg-gradient-to-r from-blue-700 to-purple-800 rounded-full transition-all duration-100 ease-out"
                 style={{ width: `${loadingProgress}%` }}
               />
             </div>

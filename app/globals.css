@@ -147,7 +147,8 @@
 
 /* Added Rush Order Tees brand-specific styles */
 .rush-gradient {
-  background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+  /* Made CSS gradient darker from #2196f3/#1976d2 to #1565c0/#0d47a1 */
+  background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
 }
 
 .rush-logo-bg {
