@@ -62,9 +62,9 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
       <div className="flex flex-col items-center justify-center h-full">
         <div className="flex flex-col items-center space-y-8">
           <img
-            src="/ai-tshirt-designer-logo-new.png"
+            src="/ai-tshirt-designer-logo-updated.png"
             alt="AI T-Shirt Designer Logo"
-            className="w-48 h-48 object-contain"
+            className="w-52 h-52 object-contain"
           />
 
           <div className="relative">
