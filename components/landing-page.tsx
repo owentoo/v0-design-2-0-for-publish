@@ -207,7 +207,7 @@ export function LandingPage() {
       }
       const fileName = doc.getElementsByTagName("fileName")[0]?.textContent?.trim() ?? null;
       //window.location.href = selectedProduct?.handle + `&color=58627&designTemplate=basic-tee&uploadFileName=${fileName}&uploadRemoveBackground=true`;
-      window.location.href = selectedProduct?.handle + `&designTemplate=NTUyMTM2Mw&uploadFileName=${fileName}&uploadRemoveBackground=true`;
+      window.location.href = selectedProduct?.handle + `&uploadFileName=${fileName}&uploadRemoveBackground=true`;
     }
 
     upload(data,file_name,selectedProduct);
