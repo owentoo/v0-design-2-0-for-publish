@@ -173,36 +173,6 @@ export function LandingPage() {
         };
         reader.readAsDataURL(file);
 
-        /*
-          const response = await fetch(
-            "https://www.rushordertees.com/design/upload.php",
-            {
-              method: "POST",
-              body: formData,
-              credentials: "include",
-            }
-          );
-
-          if (!response.ok) {
-            throw new Error("Upload failed");
-          }
-
-          const xmlText = await response.text();
-          const parser = new DOMParser();
-          const xmlDoc = parser.parseFromString(xmlText, "application/xml");
-          const success = xmlDoc.getElementsByTagName("success")[0]?.textContent;
-          const fileName =
-            xmlDoc.getElementsByTagName("fileName")[0]?.textContent;
-
-          if (success === "true" && fileName) {
-            // Store fileName if needed, then redirect
-            window.location.href =
-              selectedProduct?.handle +
-              `&designTemplate=${fileName}&uploadFileName=${fileName}&uploadRemoveBackground=true`;
-          } else {
-            throw new Error("Upload failed or invalid response");
-          }
-        */
       } catch (error) {
         console.error("File upload error:", error);
         alert("Upload failed. Please try again.");
@@ -357,8 +327,77 @@ export function LandingPage() {
     }
   };
 
+  
+async function getBase64AndFilename(url) {
+  const u = new URL(url);
+  let fileName = u.pathname.split("/").pop() || "file"; // e.g., "3KbROTxdQ6SkapN29dCbEA.png"
+
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+
+  // Try to read filename from Content-Disposition if provided
+  const cd = res.headers.get("content-disposition");
+  if (cd) {
+    const m = /filename\*?=(?:UTF-8''|")?([^\";]+)/i.exec(cd);
+    if (m) fileName = decodeURIComponent(m[1].replace(/"/g, "").trim());
+  }
+
+  const mime = res.headers.get("content-type") || "application/octet-stream";
+
+  // Ensure file has an extension; infer from MIME if missing
+  if (!/\.[a-z0-9]{2,}$/i.test(fileName)) {
+    const inferred = mime.split("/")[1]?.split("+")[0];
+    if (inferred) fileName += "." + inferred;
+  }
+
+  // Get bytes → base64
+  let base64, dataUrl;
+
+  if (typeof window === "undefined" || typeof FileReader === "undefined") {
+    // Node / edge runtimes without FileReader
+    const ab = await res.arrayBuffer();
+    if (typeof Buffer !== "undefined") {
+      base64 = Buffer.from(ab).toString("base64");
+    } else {
+      // Fallback: base64 without Buffer
+      let binary = "";
+      const bytes = new Uint8Array(ab);
+      const chunk = 0x8000;
+      for (let i = 0; i < bytes.length; i += chunk) {
+        binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
+      }
+      base64 = btoa(binary);
+    }
+    dataUrl = `data:${mime};base64,${base64}`;
+  } else {
+    // Browser with FileReader
+    const blob = await res.blob();
+    dataUrl = await new Promise((resolve, reject) => {
+      const fr = new FileReader();
+      fr.onerror = () => reject(fr.error);
+      fr.onload = () => resolve(fr.result);
+      fr.readAsDataURL(blob);
+    });
+    base64 = String(dataUrl).split(",")[1];
+  }
+
+  return { fileName, mime, base64, dataUrl };
+}
+
+  
   const handleUseDesign = (image: GeneratedImage) => {
-    window.location.href = "https://www.rushordertees.com/design";
+
+    console.log("Using design:", image);
+    getBase64AndFilename(image.url)
+    .then(({ fileName, base64 }) => {
+      console.log("fileName:", fileName);         // -> "3KbROTxdQ6SkapN29dCbEA.png"
+      console.log("base64 preview:", base64.slice(0, 80) + "...");
+      
+      onload(base64,fileName,selectedProduct);
+    })
+    .catch(console.error);
+    
+    //window.location.href = "https://www.rushordertees.com/design";
   };
 
   const handleBackToOptions = () => {
