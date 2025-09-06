@@ -286,7 +286,7 @@ export function LandingPage() {
     try {
       const imagePromises = Array.from({ length: 3 }, async (_, index) => {
         try {
-          /* const response = await fetch("/api/generate-image", {
+          const response = await fetch("/api/generate-image", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -295,8 +295,8 @@ export function LandingPage() {
               prompt: aiPrompt,
               seed: Date.now() + index,
             }),
-          }); */
-          const response = await fetch(
+          });
+          /* const response = await fetch(
             "https://www.rushordertees.com/design/studio/postBatchGenerativeAiUpload.php",
             {
               method: "POST",
@@ -309,7 +309,7 @@ export function LandingPage() {
                 brandingName: "rushordertees.com",
               }),
             }
-          );
+          ); */
 
           if (!response.ok) {
             const errorData = await response.json();
@@ -478,7 +478,7 @@ export function LandingPage() {
     try {
       const imagePromises = Array.from({ length: 3 }, async (_, index) => {
         try {
-          /* const response = await fetch("/api/generate-image", {
+          const response = await fetch("/api/generate-image", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -487,8 +487,8 @@ export function LandingPage() {
               prompt: aiPrompt,
               seed: Date.now() + index,
             }),
-          }); */
-          const response = await fetch(
+          });
+          /* const response = await fetch(
             "https://www.rushordertees.com/design/studio/postBatchGenerativeAiUpload.php",
             {
               method: "POST",
@@ -501,7 +501,7 @@ export function LandingPage() {
                 brandingName: "rushordertees.com",
               }),
             }
-          );
+          ); */
 
           if (!response.ok) {
             const errorData = await response.json();
