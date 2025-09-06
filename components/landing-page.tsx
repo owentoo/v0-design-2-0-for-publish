@@ -238,6 +238,7 @@ export function LandingPage() {
         }
         const fileName =
           doc.getElementsByTagName("fileName")[0]?.textContent?.trim() ?? null;
+        setIsUploading(false);
         window.location.href =
           selectedProduct?.handle +
           `&uploadFileName=${fileName}&uploadRemoveBackground=true`;
