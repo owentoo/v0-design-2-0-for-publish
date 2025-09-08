@@ -13,6 +13,7 @@ import {
   CarouselNext,
 } from "@/components/ui/carousel";
 import { Upload, Sparkles, Type, Loader2, ArrowUp } from "lucide-react";
+import { ProductCarousel } from "./product-carousel";
 
 interface Product {
   id: number;
@@ -216,11 +217,6 @@ export function LandingPage() {
         const ct = res.headers.get("content-type") || "";
         const text = await res.text();
         const isXML = ct.includes("xml") || text.trim().startsWith("<");
-        console.log(
-          { ct, isXML, text },
-          "ct, isXML, text",
-          selectedProduct.handle
-        );
         if (!isXML) {
           console.log("Not XML:", text);
         }
@@ -236,12 +232,9 @@ export function LandingPage() {
         if (doc.getElementsByTagName("parsererror").length) {
           throw new Error("Invalid XML in text");
         }
-        const fileName =
-          doc.getElementsByTagName("fileName")[0]?.textContent?.trim() ?? null;
+        const fileName = doc.getElementsByTagName("fileName")[0]?.textContent?.trim() ?? null;
         setIsUploading(false);
-        window.location.href =
-          selectedProduct?.handle +
-          `&uploadFileName=${fileName}&uploadRemoveBackground=true`;
+        window.location.href = selectedProduct?.handle + `&uploadFileName=${fileName}&uploadRemoveBackground=true`;
       } catch (e) {
         setIsUploading(false);
         console.error("Upload error:", e);
@@ -253,8 +246,68 @@ export function LandingPage() {
   const delay = (ms: number) =>
     new Promise((resolve) => setTimeout(resolve, ms));
 
+  
+
+  async function getBase64AndFilename(url) {
+      const u = new URL(url);
+      let fileName = u.pathname.split("/").pop() || "file"; // e.g., "3KbROTxdQ6SkapN29dCbEA.png"
+
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+
+      // Try to read filename from Content-Disposition if provided
+      const cd = res.headers.get("content-disposition");
+      if (cd) {
+        const m = /filename\*?=(?:UTF-8''|")?([^\";]+)/i.exec(cd);
+        if (m) fileName = decodeURIComponent(m[1].replace(/"/g, "").trim());
+      }
+
+      const mime = res.headers.get("content-type") || "application/octet-stream";
+
+      // Ensure file has an extension; infer from MIME if missing
+      if (!/\.[a-z0-9]{2,}$/i.test(fileName)) {
+        const inferred = mime.split("/")[1]?.split("+")[0];
+        if (inferred) fileName += "." + inferred;
+      }
+
+      // Get bytes → base64
+      let base64, dataUrl;
+
+      if (typeof window === "undefined" || typeof FileReader === "undefined") {
+        // Node / edge runtimes without FileReader
+        const ab = await res.arrayBuffer();
+        if (typeof Buffer !== "undefined") {
+          base64 = Buffer.from(ab).toString("base64");
+        } else {
+          // Fallback: base64 without Buffer
+          let binary = "";
+          const bytes = new Uint8Array(ab);
+          const chunk = 0x8000;
+          for (let i = 0; i < bytes.length; i += chunk) {
+            binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
+          }
+          base64 = btoa(binary);
+        }
+        dataUrl = `data:${mime};base64,${base64}`;
+      } else {
+        // Browser with FileReader
+        const blob = await res.blob();
+        dataUrl = await new Promise((resolve, reject) => {
+          const fr = new FileReader();
+          fr.onerror = () => reject(fr.error);
+          fr.onload = () => resolve(fr.result);
+          fr.readAsDataURL(blob);
+        });
+        base64 = String(dataUrl).split(",")[1];
+      }
+
+      return { fileName, mime, base64, dataUrl };
+  }
+
+
   const handleAIGenerate = async () => {
     if (!aiPrompt.trim()) return;
+    console.log("Generating AI images for prompt:", aiPrompt,selectedProduct);
 
     setIsGenerating(true);
     setShowAILoading(true);
@@ -287,30 +340,14 @@ export function LandingPage() {
     try {
       const imagePromises = Array.from({ length: 3 }, async (_, index) => {
         try {
-          const response = await fetch("/api/generate-image", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              prompt: aiPrompt,
-              seed: Date.now() + index,
-            }),
-          });
-          /* const response = await fetch(
-            "https://www.rushordertees.com/design/studio/postBatchGenerativeAiUpload.php",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                prompt: aiPrompt,
-                batchSize: Date.now() + index,
-                brandingName: "rushordertees.com",
-              }),
-            }
-          ); */
+          const response = await fetch('https://www.rushordertees.com/design-v2/studio/postBatchGenerativeAiUpload.php', {
+				    method: 'POST',
+						body: JSON.stringify({
+							"prompt": aiPrompt,
+							"batchSize": 1,
+							"brandingName": "rushordertees.com"
+						})
+				  });
 
           if (!response.ok) {
             const errorData = await response.json();
@@ -326,16 +363,15 @@ export function LandingPage() {
           }
 
           const data = await response.json();
-          console.log(`[v0] Generated image ${index + 1} data:`, data);
-
+          
           const imageId = startIndex + index + 1;
           setGeneratedImages((prev) =>
             prev.map((img) =>
-              img.id === imageId
-                ? { ...img, url: data.imageUrl, isLoading: false }
-                : img
+              //img.id === imageId ? { ...img, url: data[0].url, isLoading: false } : img
+              img.id === imageId ? { ...img, url: data[0].url, fileName: data[0].fileName, autoBgRemove: data[0].autoBgRemove, isLoading: false } : img
             )
           );
+          console.log("Updated generatedImages:", generatedImages);
 
           return { success: true, index, data };
         } catch (error) {
@@ -378,74 +414,18 @@ export function LandingPage() {
     }
   };
 
-  async function getBase64AndFilename(url) {
-    const u = new URL(url);
-    let fileName = u.pathname.split("/").pop() || "file"; // e.g., "3KbROTxdQ6SkapN29dCbEA.png"
-
-    const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
-
-    // Try to read filename from Content-Disposition if provided
-    const cd = res.headers.get("content-disposition");
-    if (cd) {
-      const m = /filename\*?=(?:UTF-8''|")?([^\";]+)/i.exec(cd);
-      if (m) fileName = decodeURIComponent(m[1].replace(/"/g, "").trim());
-    }
-
-    const mime = res.headers.get("content-type") || "application/octet-stream";
-
-    // Ensure file has an extension; infer from MIME if missing
-    if (!/\.[a-z0-9]{2,}$/i.test(fileName)) {
-      const inferred = mime.split("/")[1]?.split("+")[0];
-      if (inferred) fileName += "." + inferred;
-    }
-
-    // Get bytes → base64
-    let base64, dataUrl;
-
-    if (typeof window === "undefined" || typeof FileReader === "undefined") {
-      // Node / edge runtimes without FileReader
-      const ab = await res.arrayBuffer();
-      if (typeof Buffer !== "undefined") {
-        base64 = Buffer.from(ab).toString("base64");
-      } else {
-        // Fallback: base64 without Buffer
-        let binary = "";
-        const bytes = new Uint8Array(ab);
-        const chunk = 0x8000;
-        for (let i = 0; i < bytes.length; i += chunk) {
-          binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
-        }
-        base64 = btoa(binary);
-      }
-      dataUrl = `data:${mime};base64,${base64}`;
-    } else {
-      // Browser with FileReader
-      const blob = await res.blob();
-      dataUrl = await new Promise((resolve, reject) => {
-        const fr = new FileReader();
-        fr.onerror = () => reject(fr.error);
-        fr.onload = () => resolve(fr.result);
-        fr.readAsDataURL(blob);
-      });
-      base64 = String(dataUrl).split(",")[1];
-    }
-
-    return { fileName, mime, base64, dataUrl };
-  }
-
   const handleUseDesign = (image: GeneratedImage) => {
-    console.log("Using design:", image);
+    console.log("Using design:", image,selectedProduct);
     getBase64AndFilename(image.url)
-      .then(({ fileName, base64 }) => {
-        console.log("fileName:", fileName); // -> "3KbROTxdQ6SkapN29dCbEA.png"
-        console.log("base64 preview:", base64.slice(0, 80) + "...");
+    .then(({ fileName, base64 }) => {
+      console.log("fileName:", fileName); // -> "3KbROTxdQ6SkapN29dCbEA.png"
+      console.log("base64 preview:", base64.slice(0, 80) + "...");
 
-        onload(base64, fileName, selectedProduct);
-      })
-      .catch(console.error);
-
-    //window.location.href = "https://www.rushordertees.com/design";
+      //onload(base64, fileName, selectedProduct);
+    })
+    .catch(console.error);
+    //onload(base64, fileName, selectedProduct);
+    
   };
 
   const handleBackToOptions = () => {
@@ -479,7 +459,7 @@ export function LandingPage() {
     try {
       const imagePromises = Array.from({ length: 3 }, async (_, index) => {
         try {
-          const response = await fetch("/api/generate-image", {
+          /* const response = await fetch("/api/generate-image", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -488,9 +468,9 @@ export function LandingPage() {
               prompt: aiPrompt,
               seed: Date.now() + index,
             }),
-          });
-          /* const response = await fetch(
-            "https://www.rushordertees.com/design/studio/postBatchGenerativeAiUpload.php",
+          }); */
+          const response = await fetch(
+            "https://www.rushordertees.com/design-v2/studio/postBatchGenerativeAiUpload.php",
             {
               method: "POST",
               headers: {
@@ -498,11 +478,11 @@ export function LandingPage() {
               },
               body: JSON.stringify({
                 prompt: aiPrompt,
-                batchSize: Date.now() + index,
+                batchSize: 1,
                 brandingName: "rushordertees.com",
               }),
             }
-          ); */
+          );
 
           if (!response.ok) {
             const errorData = await response.json();
@@ -522,8 +502,8 @@ export function LandingPage() {
           const imageId = startIndex + index + 1;
           setGeneratedImages((prev) =>
             prev.map((img) =>
-              img.id === imageId
-                ? { ...img, url: data.url, isLoading: false }
+              img.id === data[0].id
+                ? { ...img, url: data[0].url, fileName: data[0].fileName, autoBgRemove: data[0].autoBgRemove, isLoading: false }
                 : img
             )
           );
@@ -600,8 +580,6 @@ export function LandingPage() {
   const shouldShowTopNav = !showAILoading;
   const shouldShowBackButton =
     showOptions || showAIPrompt || showAILoading || showAIResults;
-
-  console.log("Current State:", color);
 
   return (
     <div>
@@ -838,7 +816,9 @@ export function LandingPage() {
                       >
                         <CarouselContent>
                           {generatedImages.map((image, index) => (
+                            
                             <CarouselItem key={image.id}>
+                              { console.log("Rendering image:", image,index) }
                               <div className="mb-4">
                                 <div className="aspect-square overflow-hidden flex items-center justify-center relative rounded-xl">
                                   {image.isLoading ? (
