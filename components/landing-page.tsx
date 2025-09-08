@@ -421,7 +421,7 @@ export function LandingPage() {
       console.log("fileName:", fileName); // -> "3KbROTxdQ6SkapN29dCbEA.png"
       console.log("base64 preview:", base64.slice(0, 80) + "...");
 
-      //onload(base64, fileName, selectedProduct);
+      onload(base64, fileName, selectedProduct);
     })
     .catch(console.error);
     //onload(base64, fileName, selectedProduct);
