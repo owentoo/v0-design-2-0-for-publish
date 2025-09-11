@@ -77,33 +77,9 @@ export function LandingPage() {
   }
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    try {
-      const file = event.target.files?.[0]
-      if (file) {
-        // Validate file type
-        if (!file.type.startsWith("image/")) {
-          console.error("[v0] Invalid file type:", file.type)
-          return
-        }
-
-        // Validate file size (max 10MB to prevent memory issues)
-        const maxSize = 10 * 1024 * 1024 // 10MB
-        if (file.size > maxSize) {
-          console.error("[v0] File too large:", file.size)
-          alert("File is too large. Please choose an image under 10MB.")
-          return
-        }
-
-        console.log("[v0] File selected successfully:", file.name, file.size)
-        window.location.href = "https://rushordertees.com/design"
-      }
-    } catch (error) {
-      console.error("[v0] Error handling file upload:", error)
-    } finally {
-      // Reset the input to allow selecting the same file again
-      if (event.target) {
-        event.target.value = ""
-      }
+    const file = event.target.files?.[0]
+    if (file && file.type.startsWith("image/")) {
+      window.location.href = "https://rushordertees.com/design"
     }
   }
 
@@ -349,15 +325,7 @@ export function LandingPage() {
           />
         )}
 
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          capture="environment"
-          multiple={false}
-          onChange={handleFileUpload}
-          className="hidden"
-        />
+        <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
 
         {showAIPrompt && (
           <div className="min-h-screen py-0 px-0">
