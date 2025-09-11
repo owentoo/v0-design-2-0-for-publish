@@ -354,6 +354,7 @@ export function LandingPage() {
           type="file"
           accept="image/*"
           capture="environment"
+          multiple={false}
           onChange={handleFileUpload}
           className="hidden"
         />
