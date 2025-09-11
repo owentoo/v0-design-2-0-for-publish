@@ -4,7 +4,6 @@ import type React from "react";
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { TopNavBar } from "@/components/ui/top-nav-bar";
-import ColorThief from "colorthief";
 import {
   Carousel,
   CarouselContent,
@@ -206,52 +205,6 @@ const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
 };
 
 
-  function onload(data, file_name, selectedProduct) {
-    async function upload(data, file_name, selectedProduct) {
-      try {
-        setIsUploading(true);
-        const res = await fetch(
-          "https://www.rushordertees.com/design-v2/upload.php",
-          {
-            method: "POST",
-            body: JSON.stringify({
-              name: file_name,
-              base64: data,
-            }),
-          }
-        );
-
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-        const ct = res.headers.get("content-type") || "";
-        const text = await res.text();
-        const isXML = ct.includes("xml") || text.trim().startsWith("<");
-        if (!isXML) {
-          console.log("Not XML:", text);
-        }
-
-        var parsed =
-          typeof DOMParser !== "undefined"
-            ? new DOMParser().parseFromString(text, "application/xml")
-            : text;
-        const doc = new DOMParser().parseFromString(
-          text.trim(),
-          "application/xml"
-        );
-        if (doc.getElementsByTagName("parsererror").length) {
-          throw new Error("Invalid XML in text");
-        }
-        const fileName = doc.getElementsByTagName("fileName")[0]?.textContent?.trim() ?? null;
-        setIsUploading(false);
-        window.location.href = selectedProduct?.handle + `&uploadFileName=${fileName}&uploadRemoveBackground=true`;
-      } catch (e) {
-        setIsUploading(false);
-        console.error("Upload error:", e);
-      }
-    }
-
-    upload(data, file_name, selectedProduct);
-  }
   const delay = (ms: number) =>
     new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -966,18 +919,6 @@ const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
                               src={product.image || "/placeholder.svg"}
                               alt={product.name}
                               className="max-w-full max-h-full object-contain"
-                              onLoad={(event) => {
-                                const colorThief = new ColorThief();
-                                const dominantColor = colorThief.getColor(
-                                  event.currentTarget,
-                                  10
-                                );
-                                setColor(
-                                  dominantColor
-                                    ? `rgb(${dominantColor.join(",")})`
-                                    : null
-                                );
-                              }}
                             />
                           </div>
                         </div>
