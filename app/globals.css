@@ -7,8 +7,8 @@
 @layer base, components, utilities;
 
 :root {
-  /* Updated color tokens to match Rush Order Tees brand with blue primary colors */
-  --background: oklch(1 0 0); /* #ffffff */
+  /* Updated background to transparent to allow gradient classes to work */
+  --background: transparent; /* Allow gradient backgrounds to show through */
   --foreground: oklch(0.145 0 0); /* #475569 */
   --card: oklch(1 0 0); /* #f1f5f9 */
   --card-foreground: oklch(0.145 0 0); /* #475569 */
@@ -48,8 +48,8 @@
 }
 
 .dark {
-  /* Updated dark mode tokens to maintain blue theme with proper contrast */
-  --background: oklch(0.145 0 0); /* Dark background */
+  /* Updated dark mode background to transparent to allow gradient classes */
+  --background: transparent; /* Allow gradient backgrounds to show through */
   --foreground: oklch(0.985 0 0); /* Light text */
   --card: oklch(0.145 0 0); /* Dark card */
   --card-foreground: oklch(0.985 0 0); /* Light card text */
@@ -127,8 +127,9 @@
   * {
     @apply border-border outline-ring/50;
   }
+  /* Removed bg-background to allow gradient classes to work */
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
   }
 }
 
