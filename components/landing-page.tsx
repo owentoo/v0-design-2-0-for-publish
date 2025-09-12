@@ -193,10 +193,10 @@ const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     }
 
     const fileName = doc.getElementsByTagName("fileName")[0]?.textContent?.trim() ?? null;
-    //setIsUploading(false);
 
     // ✅ Navigate in the same window; your RN WebView will keep this in-app
     window.location.href = selectedProduct?.handle + `&uploadFileName=${fileName}&uploadRemoveBackground=true`;
+    setIsUploading(false);
   } catch (e) {
     setIsUploading(false);
     console.error("Upload error:", e);
