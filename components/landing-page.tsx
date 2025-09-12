@@ -377,103 +377,79 @@ const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
   };
 
   
-function base64ToFile(dataUrlOrBase64: string, fileName: string): File {
-  // Accepts either a full data URL ("data:image/png;base64,....") or raw base64
+
+// Accepts either a data URL ("data:image/png;base64,...") or raw base64
+function base64ToFile(dataUrlOrBase64: string, nameFallback = "design.png"): File {
   let mime = "image/png";
   let base64 = dataUrlOrBase64;
 
-  const isDataUrl = dataUrlOrBase64.startsWith("data:");
-  if (isDataUrl) {
+  if (dataUrlOrBase64.startsWith("data:")) {
     const [meta, data] = dataUrlOrBase64.split(",", 2);
-    const m = /data:(.*?);base64/.exec(meta);
+    const m = /data:(.*?);base64/i.exec(meta);
     if (m?.[1]) mime = m[1];
-    base64 = data;
+    base64 = data ?? "";
   }
+
+  // Some sources URL-encode the base64 segment
+  try { base64 = decodeURIComponent(base64); } catch {}
 
   const binary = atob(base64);
   const bytes = new Uint8Array(binary.length);
   for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
 
-  return new File([bytes], fileName || "design.png", { type: mime });
+  // Ensure a safe filename
+  const safeName = (nameFallback || "design.png").replace(/[^\w.\-]/g, "_");
+  return new File([bytes], safeName, { type: mime });
 }
 
+async function handleUseDesign(image: GeneratedImage) {
+  try {
+    setIsUploading(true);
+    console.log("Using design:", image, selectedProduct);
 
-  async function handleUseDesign(image: GeneratedImage) {
-    try {
-      setIsUploading(true);
-      console.log("Using design:", image, selectedProduct);
+    const image_url = image.url.replace("cdn.legacy.images.printfly.com/unsafe/", "");
 
-      const image_url = image.url.replace("cdn.legacy.images.printfly.com/unsafe/", "");
-      
-      const { fileName, base64 } = await getBase64AndFilename(image_url);
-      console.log("fileName:", fileName);
-      console.log("base64 preview:", base64.slice(0, 80) + "...");
+    // Must return { fileName: string | null | undefined, base64: string }
+    const { fileName, base64 } = await getBase64AndFilename(image_url);
+    console.log("fileName:", fileName);
+    console.log("base64 preview:", base64.slice(0, 80) + "...");
 
-      
-      
-  function base64ToFile(dataUrlOrBase64: string, fileName: string): File {
-      let mime = "image/png";
-      let base64 = dataUrlOrBase64;
-
-      const isDataUrl = dataUrlOrBase64.startsWith("data:");
-      if (isDataUrl) {
-        const [meta, data] = dataUrlOrBase64.split(",", 2);
-        const m = /data:(.*?);base64/.exec(meta);
-        if (m?.[1]) mime = m[1];
-        base64 = data;
-      }
-
-      const binary = atob(base64);
-      const bytes = new Uint8Array(binary.length);
-      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-
-      return new File([bytes], fileName || "design.png", { type: mime });
-    }
-
+    // ✅ FIXED: create a File from base64
     const file = base64ToFile(base64, fileName ?? "design.png");
 
-      const form = new FormData();
-      // If the PHP endpoint expects a specific field name, keep "uploaded"
-      form.append("uploaded", file, file.name);
+    const form = new FormData();
+    form.append("uploaded", file, file.name); // keep field name expected by PHP
 
-      const res = await fetch("https://www.rushordertees.com/design-v2/upload.php", {
-        method: "POST",
-        body: form,
-      });
+    const res = await fetch("https://www.rushordertees.com/design-v2/upload.php", {
+      method: "POST",
+      body: form,
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-      const text = await res.text();
-      const doc = new DOMParser().parseFromString(text.trim(), "application/xml");
-
-      // Detect malformed XML
-      if (doc.getElementsByTagName("parsererror").length) {
-        throw new Error("Invalid XML in response");
-      }
-
-      const serverFileName =
-        doc.getElementsByTagName("fileName")[0]?.textContent?.trim() ?? null;
-
-      if (!serverFileName) {
-        throw new Error("fileName not found in server response");
-      }
-
-      // Build redirect URL safely (assumes handle is a path like "/t-shirts/xyz")
-      const base = selectedProduct?.handle || "/";
-      const sep = base.includes("?") ? "&" : "?";
-      const nextUrl =
-        `${base}${sep}uploadFileName=${encodeURIComponent(serverFileName)}` +
-        `&uploadRemoveBackground=true`;
-
-      window.location.href = nextUrl;
-    } catch (err) {
-      console.error(err);
-      // Optionally surface a toast/UI error
-      // showToast(String(err instanceof Error ? err.message : err));
-    } finally {
-      setIsUploading(false);
+    const text = await res.text();
+    const doc = new DOMParser().parseFromString(text.trim(), "application/xml");
+    if (doc.getElementsByTagName("parsererror").length) {
+      throw new Error("Invalid XML in response");
     }
+
+    const serverFileName = doc.getElementsByTagName("fileName")[0]?.textContent?.trim() ?? null;
+    if (!serverFileName) throw new Error("fileName not found in server response");
+
+    const base = selectedProduct?.handle || "/";
+    const sep = base.includes("?") ? "&" : "?";
+    const nextUrl =
+      `${base}${sep}uploadFileName=${encodeURIComponent(serverFileName)}` +
+      `&uploadRemoveBackground=true`;
+
+    window.location.href = nextUrl;
+  } catch (err) {
+    console.error(err);
+    // showToast(err instanceof Error ? err.message : String(err));
+  } finally {
+    setIsUploading(false);
   }
+}
+
 
   const handleBackToOptions = () => {
     setShowAIPrompt(false);
