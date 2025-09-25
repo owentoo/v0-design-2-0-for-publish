@@ -51,6 +51,7 @@ export function LandingPage() {
     null
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [aiError, setAiError] = useState<string | null>(null);
 
   const products: Product[] = [
     {
@@ -140,6 +141,19 @@ export function LandingPage() {
         "https://www.rushordertees.com/design/?method=scr&item=9347&designTemplate=NTUyMTM2Mw",
     },
   ];
+
+    
+  const showAiError = (msg: string) => {
+    setAiError(msg);
+    if (progressTimer) {
+      clearInterval(progressTimer);
+      setProgressTimer(null);
+    }
+    setIsGenerating(false);
+    setShowAILoading(false);
+    setShowAIResults(false);
+    setShowAIPrompt(true);
+  };
 
   const handleProductSelect = (product: Product) => {
     setSelectedProduct(product);
@@ -325,6 +339,11 @@ const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
           }
 
           const data = await response.json();
+          // Guard: no array, empty array, or missing URL
+          if (!Array.isArray(data) || data.length === 0 || !data[0]?.url) {
+            showAiError("No designs were generated. Try a shorter or clearer description and try again.");
+            return;
+          }
           
           const imageId = startIndex + index + 1;
           setGeneratedImages((prev) =>
@@ -649,7 +668,7 @@ async function handleUseDesign(image: GeneratedImage) {
             <div className="max-w-[600px] mx-auto">
               <div className="relative overflow-y-auto p-4 min-h-[85vh] py-5">
                 <div className="relative z-10">
-                  <div className="mb-16 rounded-full">
+                  <div className="mb-8 rounded-full">
                     <div className="relative rounded-full">
                       <div className="border border-white/40 shadow-sm overflow-hidden rounded-4xl bg-[rgba(255,255,255,0.16)]">
                         <div className="flex items-center px-4 py-2 pr-2 shadow-none text-transparent bg-transparent">
@@ -699,6 +718,20 @@ async function handleUseDesign(image: GeneratedImage) {
                     </div>
                   </div>
                 </div>
+
+                {aiError && (
+                  <div className="mb-4 rounded-xl bg-red-600/20 border border-red-400/40 text-red-100 p-3 text-sm flex items-start justify-between">
+                    <span>{aiError}</span>
+                    <button
+                      onClick={() => setAiError(null)}
+                      className="ml-4 text-red-100/80 hover:text-white"
+                      aria-label="Dismiss error"
+                    >
+                      Dismiss
+                    </button>
+                  </div>
+                )}
+
 
                 <div className="mb-12">
                   <h2 className="text-white font-medium text-sm mb-4">
