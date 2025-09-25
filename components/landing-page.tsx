@@ -341,10 +341,15 @@ const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
           const data = await response.json();
           // Guard: no array, empty array, or missing URL
           if (!Array.isArray(data) || data.length === 0 || !data[0]?.url) {
+            setGeneratedImages((prev) =>
+              prev.filter((img) => img.id < startIndex + 1 || img.id > startIndex + 3)
+            );
             showAiError("No designs were generated. Try a shorter or clearer description and try again.");
             return;
           }
-          
+
+         
+         
           const imageId = startIndex + index + 1;
           setGeneratedImages((prev) =>
             prev.map((img) =>
@@ -353,27 +358,12 @@ const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
             )
           );
           console.log("Updated generatedImages:", generatedImages);
+        
 
           return { success: true, index, data };
         } catch (error) {
-          console.error(`Error generating image ${index + 1}:`, error);
-
-          const imageId = startIndex + index + 1;
-          setGeneratedImages((prev) =>
-            prev.map((img) =>
-              img.id === imageId
-                ? {
-                    ...img,
-                    url: `/placeholder.svg?height=300&width=300&query=${encodeURIComponent(
-                      aiPrompt
-                    )}`,
-                    isLoading: false,
-                  }
-                : img
-            )
-          );
-
-          return { success: false, index, error };
+          console.error("Error in AI generation process:", error);
+          showAiError("We couldn't generate designs right now. Please try again in a moment.");
         }
       });
 
@@ -501,16 +491,7 @@ async function handleUseDesign(image: GeneratedImage) {
     try {
       const imagePromises = Array.from({ length: 3 }, async (_, index) => {
         try {
-          /* const response = await fetch("/api/generate-image", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              prompt: aiPrompt,
-              seed: Date.now() + index,
-            }),
-          }); */
+          
           const response = await fetch(
             "https://www.rushordertees.com/design-v2/studio/postBatchGenerativeAiUpload.php",
             {
@@ -540,6 +521,13 @@ async function handleUseDesign(image: GeneratedImage) {
             `[v0] Generated additional image ${index + 1} data:`,
             data
           );
+          if (!Array.isArray(data) || data.length === 0 || !data[0]?.url) {
+            setGeneratedImages((prev) =>
+              prev.filter((img) => img.id < startIndex + 1 || img.id > startIndex + 3)
+            );
+            showAiError("No designs were generated. Try a shorter or clearer description and try again.");
+            return;
+          }
 
           const imageId = startIndex + index + 1;
           setGeneratedImages((prev) =>
@@ -557,20 +545,9 @@ async function handleUseDesign(image: GeneratedImage) {
           );
 
           const imageId = startIndex + index + 1;
-          setGeneratedImages((prev) =>
-            prev.map((img) =>
-              img.id === imageId
-                ? {
-                    ...img,
-                    url: `/placeholder.svg?height=300&width=300&query=${encodeURIComponent(
-                      aiPrompt
-                    )}`,
-                    isLoading: false,
-                  }
-                : img
-            )
-          );
-
+          // Option A: delete the failed slot
+          setGeneratedImages((prev) => prev.filter((img) => img.id !== imageId));
+          setAiError("Some designs could not be generated. You can try again.");
           return { success: false, index, error };
         }
       });
