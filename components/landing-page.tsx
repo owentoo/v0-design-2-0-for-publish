@@ -344,7 +344,7 @@ const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
             setGeneratedImages((prev) =>
               prev.filter((img) => img.id < startIndex + 1 || img.id > startIndex + 3)
             );
-            showAiError("No designs were generated. Try a shorter or clearer description and try again.");
+            showAiError("No designs were generated. Try a more detailed or clearer description and try again.");
             return;
           }
 
