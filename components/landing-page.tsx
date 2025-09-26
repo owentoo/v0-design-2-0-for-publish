@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useState, useRef } from "react";
+import { useEffect,useMemo,useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { TopNavBar } from "@/components/ui/top-nav-bar";
 import {
@@ -47,11 +47,10 @@ export function LandingPage() {
     colors: [[]],
   });
   const [color, setColor] = useState<string | null>(null);
-  const [progressTimer, setProgressTimer] = useState<NodeJS.Timeout | null>(
-    null
-  );
+  const [progressTimer, setProgressTimer] = useState<NodeJS.Timeout | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [aiError, setAiError] = useState<string | null>(null);
+  const aiErrorTimer = useRef<number | null>(null);
 
   const products: Product[] = [
     {
@@ -142,18 +141,43 @@ export function LandingPage() {
     },
   ];
 
-    
+  useEffect(() => {
+    return () => {
+      if (aiErrorTimer.current) {
+        clearTimeout(aiErrorTimer.current);
+        aiErrorTimer.current = null;
+      }
+      if (progressTimer.current) {
+        clearInterval(progressTimer.current);
+        progressTimer.current = null;
+      }
+    };
+  }, []);
+
+
   const showAiError = (msg: string) => {
     setAiError(msg);
-    if (progressTimer) {
-      clearInterval(progressTimer);
-      setProgressTimer(null);
+
+    // clear any previous timer
+    if (aiErrorTimer.current) {
+      clearTimeout(aiErrorTimer.current);
+      aiErrorTimer.current = null;
     }
-    setIsGenerating(false);
-    setShowAILoading(false);
+
+    // auto-hide after 3s
+    aiErrorTimer.current = window.setTimeout(() => {
+      setAiError(null);
+      aiErrorTimer.current = null;
+    }, 3000);
+
+    // keep your existing UI reset (if you already had this)
     setShowAIResults(false);
+    setShowAILoading(false);
+    setIsGenerating(false);
     setShowAIPrompt(true);
+    setGeneratedImages((prev) => prev.filter((img) => !img.isLoading));
   };
+
 
   const handleProductSelect = (product: Product) => {
     setSelectedProduct(product);
@@ -340,6 +364,7 @@ const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
 
           const data = await response.json();
           // Guard: no array, empty array, or missing URL
+          console.log(`[v0] Generated image ${index + 1} data:`, data);
           if (!Array.isArray(data) || data.length === 0 || !data[0]?.url) {
             setGeneratedImages((prev) =>
               prev.filter((img) => img.id < startIndex + 1 || img.id > startIndex + 3)
@@ -492,20 +517,14 @@ async function handleUseDesign(image: GeneratedImage) {
       const imagePromises = Array.from({ length: 3 }, async (_, index) => {
         try {
           
-          const response = await fetch(
-            "https://www.rushordertees.com/design-v2/studio/postBatchGenerativeAiUpload.php",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                prompt: aiPrompt,
-                batchSize: 1,
-                brandingName: "rushordertees.com",
-              }),
-            }
-          );
+          const response = await fetch('https://www.rushordertees.com/design-v2/studio/postBatchGenerativeAiUpload.php', {
+				    method: 'POST',
+						body: JSON.stringify({
+							"prompt": aiPrompt,
+							"batchSize": 1,
+							"brandingName": "rushordertees.com"
+						})
+				  });
 
           if (!response.ok) {
             const errorData = await response.json();
@@ -518,7 +537,7 @@ async function handleUseDesign(image: GeneratedImage) {
 
           const data = await response.json();
           console.log(
-            `[v0] Generated additional image ${index + 1} data:`,
+            `[v1] Generated additional image ${index + 1} data:`,
             data
           );
           if (!Array.isArray(data) || data.length === 0 || !data[0]?.url) {
@@ -530,13 +549,20 @@ async function handleUseDesign(image: GeneratedImage) {
           }
 
           const imageId = startIndex + index + 1;
+          
+          setGeneratedImages((prev) =>
+            prev.map((img) =>
+              img.id === imageId ? { ...img, url: data[0].url, fileName: data[0].fileName, autoBgRemove: data[0].autoBgRemove, isLoading: false } : img
+            )
+          );
+          /* 
           setGeneratedImages((prev) =>
             prev.map((img) =>
               img.id === data[0].id
                 ? { ...img, url: data[0].url, fileName: data[0].fileName, autoBgRemove: data[0].autoBgRemove, isLoading: false }
                 : img
             )
-          );
+          ); */
           return { success: true, index, data };
         } catch (error) {
           console.error(
@@ -700,12 +726,19 @@ async function handleUseDesign(image: GeneratedImage) {
                   <div className="mb-4 rounded-xl bg-red-600/20 border border-red-400/40 text-red-100 p-3 text-sm flex items-start justify-between">
                     <span>{aiError}</span>
                     <button
-                      onClick={() => setAiError(null)}
+                      onClick={() => {
+                        if (aiErrorTimer.current) {
+                          clearTimeout(aiErrorTimer.current);
+                          aiErrorTimer.current = null;
+                        }
+                        setAiError(null);
+                      }}
                       className="ml-4 text-red-100/80 hover:text-white"
                       aria-label="Dismiss error"
                     >
                       Dismiss
                     </button>
+
                   </div>
                 )}
 
@@ -848,9 +881,11 @@ async function handleUseDesign(image: GeneratedImage) {
                         }}
                       >
                         <CarouselContent>
-                          {generatedImages.map((image, index) => {
+
+                        {
+                          generatedImages.map((image, index) => {
+                            
                             let image_url = image.url.replace('cdn.legacy.images.printfly.com/unsafe/', '');
-                            console.log("Rendering image:", image,index);
                           return (
                             <>
                             <CarouselItem key={image.id}>
